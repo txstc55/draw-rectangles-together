@@ -254,9 +254,11 @@ export default {
   },
   created() {
     window.addEventListener("keypress", this.doCommand);
+    window.addEventListener("resize", this.windowResize);
   },
   destroyed() {
     window.removeEventListener("keypress", this.doCommand);
+    window.removeEventListener("resize", this.windowResize);
   },
   watch: {
     mode(newMode, oldMode) {
@@ -359,6 +361,17 @@ export default {
       } else if (cmd == "g") {
         this.downloadPath();
       }
+    },
+    getDim() {
+      // get the dimension of the svg
+      this.width = this.svg.clientWidth;
+      this.height = this.svg.clientHeight;
+    },
+    windowResize() {
+      // fire whenever window resize, we want to change the viewbox etc
+      this.getDim();
+      this.viewboxSize = { x: this.width, y: this.height };
+      this.setviewbox();
     },
     setviewbox() {
       // just don't touch this code i don't wanna know the magic
