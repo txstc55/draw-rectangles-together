@@ -47,7 +47,7 @@ class rectangle {
             this.rect.setAttributeNS(
                 null,
                 "style",
-                "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
+                "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);"
             );
             this.svg.appendChild(this.rect);
             for (var i = 0; i < 4; i++) {
@@ -59,12 +59,13 @@ class rectangle {
 
     hideStroke(hide) {
         if (this.rect != null) {
-            // document.getElementById("rec_" + this.id).remove();
+            // console.log(this.id, this.color);
             this.rect.setAttributeNS(
                 null,
                 "style",
-                ("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? "" : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"))
+                ("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? (this.color == "" ? "" : ("stroke-width: 2; stroke: " + (this.color) + ";")) : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);"))
             );
+            // console.log(("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? ("stroke-width: 2; stroke: " + (this.color == "" ? "#ffffff" : this.color) + ";") : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);")))
         }
         if (this.inner_point_count > 0) {
             for (var i = 0; i < this.rectangle_children.length; i++) {
@@ -91,7 +92,7 @@ class rectangle {
                 this.rect.setAttributeNS(
                     null,
                     "style",
-                    "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
+                    "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);"
                 );
                 this.svg.appendChild(this.rect);
             }
@@ -227,7 +228,7 @@ class rectangle {
                 this.inner_point_move.setAttributeNS(
                     null,
                     "style",
-                    "fill: #000000"
+                    "fill: #00ffac"
                 );
                 const blink_animation = document.createElementNS("http://www.w3.org/2000/svg", 'animate');
                 blink_animation.setAttribute("attributeName", "opacity");
@@ -364,7 +365,7 @@ class rectangle {
 
     // change the color of a rectangle
     // if no color is given, revert back to original color
-    changeColor(id, color = null, add = false) {
+    changeColor(id, color = "", add = false) {
         var rectangle_selected = this;
         if (id != 0) {
             rectangle_selected = this.returnInnerRectangle(id);
@@ -376,7 +377,7 @@ class rectangle {
         // remove that element first because we want to change color
         // document.getElementById("rec_" + rectangle_selected.id).remove();
 
-        if (color != null) {
+        if (color != "") {
             if (add) {
                 rectangle_selected.color = color;
                 for (var i = 0; i < rectangle_selected.rectangle_children.length; i++) {
@@ -385,20 +386,20 @@ class rectangle {
                     }
                 }
             }
-            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
+            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0);")
         } else {
-            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + (rectangle_selected.color == "" ? "#ffffff" : rectangle_selected.color) + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
+            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + (rectangle_selected.color == "" ? "#ffffff" : rectangle_selected.color) + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0);")
         }
         // this.svg.appendChild(rectangle_selected.rect);
         return rectangle_selected.id
     }
 
-    changeColorByPosition(x, y, color = null, add = false) {
+    changeColorByPosition(x, y, color = "", add = false) {
         if (x > this.x_start && x < this.x_start + this.width && y > this.y_start && y < this.y_start + this.height) {
             if (this.inner_point_count == 0) {
                 // console.log("Change color", this.id, color);
                 // document.getElementById("rec_" + this.id).remove();
-                if (color != null) {
+                if (color != "") {
                     if (add) {
                         this.color = color;
                         for (var i = 0; i < this.rectangle_children.length; i++) {
@@ -407,9 +408,9 @@ class rectangle {
                             }
                         }
                     }
-                    this.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
+                    this.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);")
                 } else {
-                    this.rect.setAttributeNS(null, "style", "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
+                    this.rect.setAttributeNS(null, "style", "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);")
                 }
                 // this.svg.appendChild(this.rect);
                 return this.id;
