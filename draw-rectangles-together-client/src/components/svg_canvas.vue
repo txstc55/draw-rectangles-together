@@ -269,30 +269,7 @@ export default {
         return;
       }
       this.clearMode(oldMode);
-
-      if (newMode == "o") {
-        // if we enter the move mode
-        this.rootRectangle.showMovablePoints();
-      } else if (newMode == "p") {
-        // if we enter the delete mode
-        this.rootRectangle.showDeletablePoints();
-      } else if (newMode == "e") {
-        // if we reenter the edit mode, we want the preview to show up immediately
-        if (!this.outsideRootRectangle()) {
-          // if we are inside the rectangle, show the previews
-          this.lastRectangle = this.rootRectangle.addPoint(
-            this.coord.x,
-            this.coord.y
-          );
-        }
-      } else if (newMode == "c") {
-        // immediately start coloring
-        this.lastHoverRectangleID = this.rootRectangle.changeColorByPosition(
-          this.coord.x,
-          this.coord.y,
-          this.lastColor
-        );
-      }
+      this.enterMode(newMode);
     },
   },
   methods: {
@@ -385,6 +362,32 @@ export default {
           this.lastRectangle.removeChildren();
           this.lastRectangle = null;
         }
+      }
+    },
+
+    enterMode(mode) {
+      if (mode == "o") {
+        // if we enter the move mode
+        this.rootRectangle.showMovablePoints();
+      } else if (mode == "p") {
+        // if we enter the delete mode
+        this.rootRectangle.showDeletablePoints();
+      } else if (mode == "e") {
+        // if we reenter the edit mode, we want the preview to show up immediately
+        if (!this.outsideRootRectangle()) {
+          // if we are inside the rectangle, show the previews
+          this.lastRectangle = this.rootRectangle.addPoint(
+            this.coord.x,
+            this.coord.y
+          );
+        }
+      } else if (mode == "c") {
+        // immediately start coloring
+        this.lastHoverRectangleID = this.rootRectangle.changeColorByPosition(
+          this.coord.x,
+          this.coord.y,
+          this.lastColor
+        );
       }
     },
 
@@ -511,10 +514,7 @@ export default {
         // we are inside canvas
         // first we find the cell to put in the new point
         const lastRectangleCopy = this.lastRectangle;
-        this.lastRectangle = this.rootRectangle.addPoint(
-          this.coord.x,
-          this.coord.y
-        ); // preview the new rectangles
+        this.enterMode("e");
         if (lastRectangleCopy != null && this.lastRectangle != null) {
           // first scenario: we moved to different cell
           if (lastRectangleCopy.id != this.lastRectangle.id) {
@@ -637,10 +637,8 @@ export default {
       downloadLink.click();
       document.body.removeChild(downloadLink);
       document.body.removeChild(svg_cpy);
-      if (this.mode == "o") {
-        this.rootRectangle.showMovablePoints();
-      } else if (this.mode == "p") {
-        this.rootRectangle.showDeletablePoints();
+      if (this.mode == "o" || this.mode == "p") {
+        this.enterMode(this.mode);
       }
     },
     downloadPNG() {
@@ -670,10 +668,8 @@ export default {
         downloadLink.click();
         document.body.removeChild(downloadLink);
         document.body.removeChild(svg_cpy);
-        if (me.mode == "o") {
-          me.rootRectangle.showMovablePoints();
-        } else if (me.mode == "p") {
-          me.rootRectangle.showDeletablePoints();
+        if (this.mode == "o" || this.mode == "p") {
+          this.enterMode(this.mode);
         }
       };
       image.src = svgUrl;
