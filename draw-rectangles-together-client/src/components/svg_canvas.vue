@@ -142,6 +142,27 @@
                     block
                     depressed
                     large
+                    color="indigo"
+                    elevation="8"
+                    @click="toggleStroke(hideStroke)"
+                    v-bind="attrs"
+                    v-on="on"
+                    dark
+                    >Stroke</v-btn
+                  >
+                </template>
+                <span>You can also press H to toggle the strokes</span>
+              </v-tooltip>
+            </v-col>
+          </v-row>
+          <v-row align="center" justify="center">
+            <v-col>
+              <v-tooltip right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    block
+                    depressed
+                    large
                     color="success"
                     elevation="8"
                     @click="downloadSVG()"
@@ -250,6 +271,7 @@ export default {
       lastColor: "#00abff", // record the last color we picked
       width: -1, // record the width of svg
       height: -1, // record the height of svg
+      hideStroke: false,
     };
   },
   created() {
@@ -267,6 +289,9 @@ export default {
         // do absolutely nothing
         // since we will remove everything
         return;
+      } else if (oldMode == "h") {
+        this.hideStroke = false;
+        this.rootRectangle.hideStroke(false);
       }
       this.clearMode(oldMode);
       this.enterMode(newMode);
@@ -318,7 +343,14 @@ export default {
         this.downloadPNG();
       } else if (cmd == "g") {
         this.downloadPath();
+      } else if (cmd == "h") {
+        this.mode = "h";
+        this.hideStroke = !this.hideStroke;
+        this.toggleStroke(this.hideStroke);
       }
+    },
+    toggleStroke(hide) {
+      this.rootRectangle.hideStroke(hide);
     },
     getDim() {
       // get the dimension of the svg
@@ -586,8 +618,8 @@ export default {
         "http://www.w3.org/2000/svg",
         "svg"
       );
-      svg_cpy.setAttribute("width", this.width);
-      svg_cpy.setAttribute("height", this.height);
+      svg_cpy.setAttribute("width", this.rootRectangle.width);
+      svg_cpy.setAttribute("height", this.rootRectangle.height);
       svg_cpy.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       svg_cpy.setAttribute("id", "svg_copy");
       document.body.appendChild(svg_cpy);
@@ -656,10 +688,16 @@ export default {
       let me = this;
       image.onload = () => {
         let canvas = document.createElement("canvas");
-        canvas.width = me.width;
-        canvas.height = me.height;
+        canvas.width = me.rootRectangle.width;
+        canvas.height = me.rootRectangle.height;
         let context = canvas.getContext("2d");
-        context.drawImage(image, 0, 0, me.width, me.height);
+        context.drawImage(
+          image,
+          0,
+          0,
+          me.rootRectangle.width,
+          me.rootRectangle.height
+        );
         let png = canvas.toDataURL(); // default png
         var downloadLink = document.createElement("a");
         downloadLink.href = png;

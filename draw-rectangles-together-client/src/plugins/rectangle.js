@@ -57,6 +57,24 @@ class rectangle {
         }
     }
 
+    hideStroke(hide) {
+        if (this.rect != null) {
+            // document.getElementById("rec_" + this.id).remove();
+            this.rect.setAttributeNS(
+                null,
+                "style",
+                ("fill: " + this.color + ";") + (hide ? "" : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"))
+            );
+        }
+        if (this.inner_point_count > 0) {
+            for (var i = 0; i < this.rectangle_children.length; i++) {
+                if (this.rectangle_children[i] != null) {
+                    this.rectangle_children[i].hideStroke(hide);
+                }
+            }
+        }
+    }
+
     // resize itself by changing attributes of the svg element
     // if the element was never created, then create it
     // if it has children, resize the children also
@@ -356,7 +374,7 @@ class rectangle {
             return -1;
         }
         // remove that element first because we want to change color
-        document.getElementById("rec_" + rectangle_selected.id).remove();
+        // document.getElementById("rec_" + rectangle_selected.id).remove();
 
         if (color != null) {
             if (add) {
@@ -371,7 +389,7 @@ class rectangle {
         } else {
             rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + rectangle_selected.color + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
         }
-        this.svg.appendChild(rectangle_selected.rect);
+        // this.svg.appendChild(rectangle_selected.rect);
         return rectangle_selected.id
     }
 
@@ -379,7 +397,7 @@ class rectangle {
         if (x > this.x_start && x < this.x_start + this.width && y > this.y_start && y < this.y_start + this.height) {
             if (this.inner_point_count == 0) {
                 // console.log("Change color", this.id, color);
-                document.getElementById("rec_" + this.id).remove();
+                // document.getElementById("rec_" + this.id).remove();
                 if (color != null) {
                     if (add) {
                         this.color = color;
@@ -393,7 +411,7 @@ class rectangle {
                 } else {
                     this.rect.setAttributeNS(null, "style", "fill: " + this.color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
                 }
-                this.svg.appendChild(this.rect);
+                // this.svg.appendChild(this.rect);
                 return this.id;
             }
             else {
