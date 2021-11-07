@@ -12,7 +12,7 @@ class rectangle {
         return path;
     }
 
-    constructor(svg, width, height, x_start, y_start, id, stroke_width = 10, color = "#ffffff") {
+    constructor(svg, width, height, x_start, y_start, id, stroke_width = 10, color = "") {
         this.svg = svg; // the svg canvas
         this.width = width; // the width of the rectangle
         this.height = height; // the height of the rectangle
@@ -47,7 +47,7 @@ class rectangle {
             this.rect.setAttributeNS(
                 null,
                 "style",
-                "fill: " + this.color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
+                "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
             );
             this.svg.appendChild(this.rect);
             for (var i = 0; i < 4; i++) {
@@ -63,7 +63,7 @@ class rectangle {
             this.rect.setAttributeNS(
                 null,
                 "style",
-                ("fill: " + this.color + ";") + (hide ? "" : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"))
+                ("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? "" : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"))
             );
         }
         if (this.inner_point_count > 0) {
@@ -91,7 +91,7 @@ class rectangle {
                 this.rect.setAttributeNS(
                     null,
                     "style",
-                    "fill: " + this.color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
+                    "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)"
                 );
                 this.svg.appendChild(this.rect);
             }
@@ -387,7 +387,7 @@ class rectangle {
             }
             rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
         } else {
-            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + rectangle_selected.color + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
+            rectangle_selected.rect.setAttributeNS(null, "style", "fill: " + (rectangle_selected.color == "" ? "#ffffff" : rectangle_selected.color) + ";stroke-width: " + Math.ceil(rectangle_selected.stroke_width) + "; stroke: rgb(0, 0, 0)")
         }
         // this.svg.appendChild(rectangle_selected.rect);
         return rectangle_selected.id
@@ -409,7 +409,7 @@ class rectangle {
                     }
                     this.rect.setAttributeNS(null, "style", "fill: " + color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
                 } else {
-                    this.rect.setAttributeNS(null, "style", "fill: " + this.color + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
+                    this.rect.setAttributeNS(null, "style", "fill: " + (this.color == "" ? "#ffffff" : this.color) + ";stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0)")
                 }
                 // this.svg.appendChild(this.rect);
                 return this.id;
