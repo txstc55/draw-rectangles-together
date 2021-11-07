@@ -262,32 +262,13 @@ export default {
   },
   watch: {
     mode(newMode, oldMode) {
+      // console.log(newMode, oldMode);
       if (newMode == "i") {
         // do absolutely nothing
         // since we will remove everything
         return;
       }
-      if (oldMode == "p") {
-        // we were in deleting mode
-        this.rootRectangle.removeDeletablePoints();
-      } else if (oldMode == "o") {
-        // we were in moving mode
-        this.rootRectangle.removeMovablePoints();
-      } else if (oldMode == "e") {
-        if (newMode != "e") {
-          // if we are leaving edit mode, then remove all previews
-          if (this.lastRectangle != null) {
-            this.lastRectangle.removeChildren();
-            this.lastRectangle = null;
-          }
-        }
-      } else if (oldMode == "c") {
-        // clear any preview color
-        if (this.lastHoverRectangleID != -1) {
-          this.rootRectangle.changeColor(this.lastHoverRectangleID);
-          this.lastHoverRectangleID = -1;
-        }
-      }
+      this.clearMode(oldMode);
 
       if (newMode == "o") {
         // if we enter the move mode
@@ -344,7 +325,7 @@ export default {
         } else {
           this.mode = "p";
         }
-      } else if (cmd == "e") {
+      } else if (cmd == "e" && this.mode != "e") {
         this.mode = "e";
       } else if (cmd == "c") {
         if (this.mode == "c") {
@@ -386,6 +367,27 @@ export default {
         vp.x + " " + vp.y + " " + vs.x + " " + vs.y
       );
     },
+
+    clearMode(mode) {
+      if (mode == "p") {
+        // we were in deleting mode
+        this.rootRectangle.removeDeletablePoints();
+      } else if (mode == "o") {
+        // we were in moving mode
+        this.rootRectangle.removeMovablePoints();
+      } else if (mode == "c") {
+        if (this.lastHoverRectangleID != -1) {
+          this.rootRectangle.changeColor(this.lastHoverRectangleID);
+          this.lastHoverRectangleID = -1;
+        }
+      } else if (mode == "e") {
+        if (this.lastRectangle != null) {
+          this.lastRectangle.removeChildren();
+          this.lastRectangle = null;
+        }
+      }
+    },
+
     mousedown(e) {
       this.mouseStartPosition.x = e.pageX;
       this.mouseStartPosition.y = e.pageY;
@@ -533,19 +535,11 @@ export default {
             this.lastColor
           );
         }
-      } else if (this.outsideRootRectangle()) {
-        // console.log("outside");
-        if (this.mode == "c") {
-          if (this.lastHoverRectangleID != -1) {
-            this.rootRectangle.changeColor(this.lastHoverRectangleID);
-            this.lastHoverRectangleID = -1;
-          }
-        } else if (this.mode == "e") {
-          if (this.lastRectangle != null) {
-            this.lastRectangle.removeChildren();
-            this.lastRectangle = null;
-          }
-        }
+      } else if (
+        (this.outsideRootRectangle() && this.mode == "e") ||
+        this.mode == "c"
+      ) {
+        this.clearMode(this.mode);
       }
     },
     wheel(e) {
@@ -572,13 +566,8 @@ export default {
     mouseleave() {
       // when mouse moves out of the svg region
       // we want to remove the previews
-      if (this.lastRectangle != null) {
-        this.lastRectangle.removeChildren();
-        this.lastRectangle = null;
-      }
-      if (this.lastHoverRectangleID != -1) {
-        this.rootRectangle.changeColor(this.lastHoverRectangleID);
-        this.lastHoverRectangleID = -1;
+      if (this.mode == "c" || this.mode == "e") {
+        this.clearMode(this.mode);
       }
       this.coord = { x: 0, y: 0 };
     },
@@ -587,33 +576,12 @@ export default {
       if (this.width <= 0 || this.height <= 0) {
         window.alert("SVG width and height must be positive");
       } else {
-        if (this.lastRectangle != null) {
-          this.lastRectangle.removeChildren();
-          this.lastRectangle = null;
-        }
-        if (this.lastHoverRectangleID != -1) {
-          this.rootRectangle.changeColor(this.lastHoverRectangleID);
-          this.lastHoverRectangleID = -1;
-        }
+        this.clearMode(this.mode);
         this.rootRectangle.resize(this.width, this.height, 0, 0);
+        this.mode = "i"; // go into idle mode
       }
     },
-    downloadSVG() {
-      // download the svg file for viewing
-      if (this.mode == "o") {
-        this.rootRectangle.removeMovablePoints();
-      } else if (this.mode == "p") {
-        this.rootRectangle.removeDeletablePoints();
-      } else {
-        if (this.lastRectangle != null) {
-          this.lastRectangle.removeChildren();
-          this.lastRectangle = null;
-        }
-        if (this.lastHoverRectangleID != -1) {
-          this.rootRectangle.changeColor(this.lastHoverRectangleID);
-          this.lastHoverRectangleID = -1;
-        }
-      }
+    copySVG() {
       var svg_cpy = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "svg"
@@ -621,6 +589,7 @@ export default {
       svg_cpy.setAttribute("width", this.width);
       svg_cpy.setAttribute("height", this.height);
       svg_cpy.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svg_cpy.setAttribute("id", "svg_copy");
       document.body.appendChild(svg_cpy);
       var all_rectangles = this.svg.getElementsByTagName("rect");
       for (let i = 0; i < all_rectangles.length; i++) {
@@ -647,6 +616,13 @@ export default {
         );
         svg_cpy.appendChild(rect);
       }
+      return svg_cpy;
+    },
+
+    downloadSVG() {
+      // download the svg file for viewing
+      this.clearMode(this.mode);
+      var svg_cpy = this.copySVG();
       // we finished copying everything
       // now download it
       var svgData = svg_cpy.outerHTML;
@@ -669,53 +645,8 @@ export default {
     },
     downloadPNG() {
       // download the svg file for viewing
-      if (this.mode == "o") {
-        this.rootRectangle.removeMovablePoints();
-      } else if (this.mode == "p") {
-        this.rootRectangle.removeDeletablePoints();
-      } else {
-        if (this.lastRectangle != null) {
-          this.lastRectangle.removeChildren();
-          this.lastRectangle = null;
-        }
-        if (this.lastHoverRectangleID != -1) {
-          this.rootRectangle.changeColor(this.lastHoverRectangleID);
-          this.lastHoverRectangleID = -1;
-        }
-      }
-      var svg_cpy = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
-      svg_cpy.setAttribute("width", this.width);
-      svg_cpy.setAttribute("height", this.height);
-      svg_cpy.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      document.body.appendChild(svg_cpy);
-      var all_rectangles = this.svg.getElementsByTagName("rect");
-      for (let i = 0; i < all_rectangles.length; i++) {
-        var rect = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "rect"
-        );
-        rect.setAttributeNS(null, "x", all_rectangles[i].getAttribute("x"));
-        rect.setAttributeNS(null, "y", all_rectangles[i].getAttribute("y"));
-        rect.setAttributeNS(
-          null,
-          "width",
-          all_rectangles[i].getAttribute("width")
-        );
-        rect.setAttributeNS(
-          null,
-          "height",
-          all_rectangles[i].getAttribute("height")
-        );
-        rect.setAttributeNS(
-          null,
-          "style",
-          all_rectangles[i].getAttribute("style")
-        );
-        svg_cpy.appendChild(rect);
-      }
+      this.clearMode(this.mode);
+      var svg_cpy = this.copySVG();
       // we finished copying everything
       // now download it
       var svgData = svg_cpy.outerHTML;
@@ -776,7 +707,8 @@ export default {
       // create a new rectangle from what we have
       var path = JSON.parse(event.target.result);
       if (path.type != "draw-rectangles-path") {
-        this.mode = "e";
+        this.clearMode(this.mode);
+        this.mode = "i";
         return;
       }
       while (this.svg.lastChild) {
@@ -810,7 +742,7 @@ export default {
         this.rootRectangle.changeColor(id, color, true);
       }
       this.lastRectangle = null;
-      this.mode = "e";
+      this.mode = "i";
     },
   },
   mounted() {
