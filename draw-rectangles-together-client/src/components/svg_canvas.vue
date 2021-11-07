@@ -289,11 +289,12 @@ export default {
         // do absolutely nothing
         // since we will remove everything
         return;
-      } else if (oldMode == "h") {
+      }
+      this.clearMode(oldMode);
+      if (oldMode == "h") {
         this.hideStroke = false;
         this.rootRectangle.hideStroke(false);
       }
-      this.clearMode(oldMode);
       this.enterMode(newMode);
     },
   },
@@ -777,6 +778,7 @@ export default {
       }
       this.lastRectangle = null;
       this.mode = "i";
+      this.hideStroke = false;
     },
   },
   mounted() {
