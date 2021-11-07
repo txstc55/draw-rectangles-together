@@ -1,12 +1,11 @@
 import numpy as np
-import scipy
 from scipy import ndimage
 import imageio
 from multiprocessing import Pool
 import json
 
 GAP_SIZE = 10
-MINIMUM_THRESHOLD = 0.5
+MINIMUM_THRESHOLD = 2
 SIGMA = 5
 
 
@@ -22,9 +21,10 @@ def sobel(file):
     dx = ndimage.sobel(gray, 0)  # horizontal derivative
     dy = ndimage.sobel(gray, 1)  # vertical derivative
     mag = np.hypot(dx, dy)   # magnitude
-    mag *= 255.0 / np.max(mag)  # normalize (Q&D)
-    # mag += gray.astype("float64") / 255
+    mag[mag > 0] = 255
     # mag *= 255.0 / np.max(mag)  # normalize (Q&D)
+    mag += gray.astype("float64")
+    mag *= 255.0 / np.max(mag)  # normalize (Q&D)
     return mag.T
 
 
@@ -174,4 +174,4 @@ def processImage(file):
     out_file.close()
 
 
-processImage("light.jpg")
+processImage("lisa.jpeg")
