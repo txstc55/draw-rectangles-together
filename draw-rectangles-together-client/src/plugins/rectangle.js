@@ -222,7 +222,7 @@ class rectangle {
             const y = this.y_start + this.inner_point_y_percent * this.height;
             if (this.inner_point_move == null) {
                 this.inner_point_move = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                this.inner_point_move.setAttributeNS(null, "r", Math.ceil(this.stroke_width * 2));
+                this.inner_point_move.setAttributeNS(null, "r", Math.max(1, Math.ceil(Math.min(Math.min(this.width, this.height), this.stroke_width) * 1.5)));
                 this.inner_point_move.setAttributeNS(null, "class", "draggable");
                 this.inner_point_move.setAttributeNS(null, "id", this.id);
                 this.inner_point_move.setAttributeNS(
@@ -284,7 +284,7 @@ class rectangle {
                 this.inner_point_delete = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 this.inner_point_delete.setAttributeNS(null, "class", "draggable");
                 this.inner_point_delete.setAttributeNS(null, "id", this.id);
-                this.inner_point_delete.setAttributeNS(null, "r", Math.ceil(this.stroke_width * 2));
+                this.inner_point_delete.setAttributeNS(null, "r", Math.max(1, Math.ceil(Math.min(Math.min(this.width, this.height), this.stroke_width) * 1.5)));
                 this.inner_point_delete.setAttributeNS(
                     null,
                     "style",
