@@ -63,7 +63,7 @@ class rectangle {
             this.rect.setAttributeNS(
                 null,
                 "style",
-                ("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? (this.color == "" ? "" : ("stroke-width: 2; stroke: " + (this.color) + ";")) : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);"))
+                ("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? ((this.color == "" || this.width < 2 || this.height < 2 || this.inner_point_count > 0) ? "" : ("stroke-width: 2; stroke: " + (this.color) + ";")) : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);"))
             );
             // console.log(("fill: " + (this.color == "" ? "#ffffff" : this.color) + ";") + (hide ? ("stroke-width: 2; stroke: " + (this.color == "" ? "#ffffff" : this.color) + ";") : ("stroke-width: " + Math.ceil(this.stroke_width) + "; stroke: rgb(0, 0, 0);")))
         }
